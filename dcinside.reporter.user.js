@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name          디시인사이드 신문고 버튼
 // @namespace     https://github.com/toriato/userscripts/dcinside.reporter.user.js
-// @match         https://gall.dcinside.com/board/view/*
 // @match         https://gall.dcinside.com/mgallery/board/view/*
 // @match         https://gall.dcinside.com/mini/board/view/*
+// @match         https://m.dcinside.com/board/*
 // @run-at        document-end
 // @noframes
 // @require       https://unpkg.com/js-sha1@0.6.0/src/sha1.js
@@ -12,8 +12,75 @@
 // @grant         GM_xmlhttpRequest
 // ==/UserScript==
 
-const decodeKey = 'yL/M=zNa0bcPQdReSfTgUhViWjXkYIZmnpo+qArOBslCt2D3uE4Fv5G6wH178xJ9K'
+/**
+ * @typedef Article
+ * @property {string} galleryId   갤러리 아이디
+ * @property {string} articleId   게시글 번호
+ * @property {string} username    작성자 아이디 또는 아이피
+ * @property {string} nickname    작성자 닉네임
+ * @property {string} category    말머리
+ * @property {string} subject     제목
+ * @property {string} content     내용
+ * @property {Object[]} attachments 첨부 파일
+ * @property {string} createdAt   작성 시간
+ * @property {number} createdAtTimestamp 작성 시간 (유닉스 타임스탬프)
+ */
 
+/** 서비스 코드 복호화를 위한 전역 디코드 키 */
+const DECODE_KEY = 'yL/M=zNa0bcPQdReSfTgUhViWjXkYIZmnpo+qArOBslCt2D3uE4Fv5G6wH178xJ9K'
+
+/** 백업 글의 index.html 파일 */
+const INDEX = /*html*/`
+<!Doctype HTML>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+    }
+    body { padding: .5em }
+    img { max-width: 100% }
+  </style>
+</head>
+<body>
+  <article>
+    <h3 class="title">
+      <span data-property="category"></span>
+      <span data-property="subject"></span>
+    </h3>
+    <div class="summary">
+      <p><span data-property="nickname"></span> (<span data-property="username"></span>)</p>
+    </div>
+    <div data-property="content"></div>
+  </article>
+  <script>
+    fetch('index.json')
+      .then(res => res.json())
+      .then(metadata => {
+        // 게시글 정보에 맞게 교체하기
+        for (let element of document.querySelectorAll('[data-property]')) {
+          const key = element.dataset.property
+
+          if (!(key in metadata.article))
+            continue
+          
+          element.innerHTML = metadata.article[key]
+        }
+      })
+      .catch(e => {
+        alert('게시글 메타데이터를 불러오는 중 오류가 발생했습니다:\\n' + e.message)
+        console.error(e)
+      })
+  </script>
+</body>
+</html>
+`
+
+/** 파일 확장명 <-> MIME 종류 맵핑 변수 */
 const fileExtensions = {
   jpg: 'image/jpeg',
   jpeg: 'image/jpeg',
@@ -25,9 +92,16 @@ const fileExtensions = {
   webm: 'video/webm'
 }
 
+// 현재 페이지 갤러리 아이디와 게시글 번호 가져오기
+const isMobile = location.hostname.startsWith('m.dcinside.com')
 const params = (new URL(location.href)).searchParams
-const gallery = params.get('id')
-const article = params.get('no')
+let galleryId = params.get('id')
+let articleId = params.get('no')
+
+// 모바일 페이지에선 주소에서 값 가져오기
+if (isMobile) {
+  [galleryId, articleId] = location.pathname.replace(/^\/board\//, '').split('/', 2)
+}
 
 /**
  * 비동기로 웹 요청을 실행합니다
@@ -57,7 +131,7 @@ function deobfuscate(keys, code) {
 
   for (let c = 0; c < keys.length;) {
     for (let i = 0; i < k.length; i++)
-      k[i] = decodeKey.indexOf(keys.charAt(c++))
+      k[i] = DECODE_KEY.indexOf(keys.charAt(c++))
 
     o.push(k[0] << 2 | k[1] >> 4)
     if (k[2] != 64) o.push((15 & k[1]) << 4 | k[2] >> 2)
@@ -84,24 +158,51 @@ function deobfuscate(keys, code) {
 }
 
 /**
+ * 현재 페이지에서 글 정보를 가져옵니다
+ * @returns {Article}
+ */
+function fetchArticle() {
+  /** @type {Article} */
+  const article = { galleryId, articleId, attachments: [] }
+
+  if (isMobile) {
+
+  } else {
+    // 작성자 정보
+    const author = document.querySelector('.gall_writer')
+    article.username = author.dataset.uid + author.dataset.ip
+    article.nickname = author.dataset.nick
+
+    // 말머리와 제목
+    article.category = document.querySelector('.title_headtext').textContent.trim()
+    article.subject = document.querySelector('.title_subject').textContent.trim()
+
+    // 내용
+    article.content = document.querySelector('.write_div').innerHTML
+  }
+
+  return article
+}
+
+/**
  * 현재 갤러리 글 목록에서 신문고 글을 찾아 보관합니다
  * @returns {Promise<void>}
  */
-async function findReportArticle() {
+async function fetchReportArticle() {
   // 모바일 디시인사이드 API 로 글 목록 불러오기
   const { response } = await request({
     method: 'POST',
     url: 'https://m.dcinside.com/ajax/response-list',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     responseType: 'json',
-    data: `id=${gallery}`
+    data: `id=${galleryId}`
   })
 
   for (let article of response.gall_list.data) {
     // 공지 글은 가장 상단에 위치하므로 처음으로 찾은 신문고 글 사용하기
     if (article.subject.includes('신문고')) {
       // 유저스크립트 저장 공간에 신문고 글 번호 저장하기
-      GM_setValue(gallery, article.no)
+      GM_setValue(galleryId, article.no)
       return
     }
   }
@@ -112,20 +213,20 @@ async function findReportArticle() {
 
 /**
  * 신문고 글 페이지에서 서비스 코드를 가져옵니다
- * @returns {Promise<Object>} 복호화된 서비스 코드
+ * @returns {Promise<string>} 복호화된 서비스 코드
  */
 async function fetchServiceCode() {
-  const reportArticleId = GM_getValue(gallery, 0)
+  const reportArticleId = GM_getValue(galleryId, 0)
 
   const { responseText, status } = await request({
     method: 'GET',
     // TODO: 미니 갤러리 지원하기, 엔드포인트 지정 필요 (/mgallery -> /mini)
-    url: `https://gall.dcinside.com/mgallery/board/view/?id=${gallery}&no=${reportArticleId}`
+    url: `https://gall.dcinside.com/mgallery/board/view/?id=${galleryId}&no=${reportArticleId}`
   })
 
   // 삭제됐거나 존재하지 않는 글이라면 신문고 글 새로 찾은 뒤 함수 재실행하기
   if (status !== 200) {
-    await findReportArticle()
+    await fetchReportArticle()
     return fetchServiceCode()
   }
 
@@ -154,16 +255,12 @@ async function hashBlob(algorithm, blob) {
  * @returns {Promise<File[]>}
  */
 async function articleToFiles() {
-  const dom = document.querySelector('.write_div').cloneNode(true)
-
-  const date = new Date()
+  const currentDate = new Date()
   const metadata = {
     href: location.href,
-    gallery,
-    article,
-    attachments: [],
-    createdAt: date.toString(),
-    createdAtTimestamp: +date,
+    article: fetchArticle(),
+    backupAt: currentDate.toString(),
+    backupAtTimestamp: +currentDate,
   }
 
   // 중복 업로드 방지를 위해 해시 기준으로 파일 임시 보관하기
@@ -173,8 +270,12 @@ async function articleToFiles() {
   // 본문에 포함된 파일을 비동기로 불러와야하므로 비동기 배열 준비하기
   const promises = []
 
+  // 본문 내용 후 처리 시작하기
+  const content = document.createElement('div')
+  content.innerHTML = metadata.article.content
+
   // 원본 주소를 가지고 있는 모든 요소를 파일로 백업하기
-  for (let element of dom.querySelectorAll('[src]')) {
+  for (let element of content.querySelectorAll('[src]')) {
     const url = element.getAttribute('src')
     const p = request({
       method: 'GET',
@@ -245,7 +346,7 @@ async function articleToFiles() {
             hashs[hash] = new File([response], attachment.name, { type: attachment.type })
           }
 
-          metadata.attachments.push(attachment)
+          metadata.article.attachments.push(attachment)
 
           // 기존 요소의 원본 주소를 업로드할 파일 경로로 변경하기
           element.setAttribute('src', hashs[hash].name)
@@ -259,45 +360,16 @@ async function articleToFiles() {
   // 모든 비동기 작업 대기하기
   await Promise.all(promises)
 
+  // 후 처리 끝난 본문 내용 메타데이터에 저장하기
+  metadata.article.content = content.innerHTML
+
   const files = Object.values(hashs)
 
-  // 본문을 HTML 형태로 파일 배열에 추가하기
-  {
-    const html = `
-      <!Doctype HTML>
-      <html>
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1">
-          <style>
-            html, body {
-              margin: 0;
-              padding: 0;
-              width: 100%;
-            }
-            body { padding: .5em }
-            img { max-width: 100% }
-          </style>
-        </head>
-        <body>
-          <ul>
-            <li><a href="attachments">모든 첨부파일 받기</a></li>
-            <li><a href="index.json">메타데이터 (JSON)</a></li>
-          </ul>
-          <div id="content">${dom.innerHTML}</div>
-        </body>
-      </html>
-    `
-
-    files.push(
-      new File([new Blob([html])], 'index.html', { type: 'text/html' })
-    )
-  }
-
-  // 메타데이터 추가하기
   files.push(
-    new File([new Blob([JSON.stringify(metadata)])], 'index.json', { type: 'application/json' })
-  )
+    new File([new Blob([INDEX])], 'index.html', { type: 'text/html' }))
+
+  files.push(
+    new File([new Blob([JSON.stringify(metadata)])], 'index.json', { type: 'application/json' }))
 
   return files
 }
@@ -329,13 +401,15 @@ async function uploadFilesToSkynet(files) {
 }
 
 async function report() {
-  const lines = [`https://m.dcinside.com/board/${gallery}/${article}`]
+  const lines = [`https://m.dcinside.com/board/${galleryId}/${articleId}`]
 
   {
     const files = await articleToFiles()
     const skylink = await uploadFilesToSkynet(files)
     lines.push(skylink)
   }
+
+  return
 
   {
     const { dataset } = document.querySelector('.gall_writer')
@@ -348,8 +422,8 @@ async function report() {
   const code = await fetchServiceCode()
   const payload = {
     _GALLTYPE_: 'M',
-    id: gallery,
-    no: GM_getValue(gallery),
+    id: galleryId,
+    no: GM_getValue(galleryId),
     name: 'ㅇㅇ',
     password: (Math.random() + 1).toString(36).substring(2),
     memo: lines.join('\n'),

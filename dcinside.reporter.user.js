@@ -27,9 +27,24 @@
  */
 
 /** 서비스 코드 복호화를 위한 전역 디코드 키 */
-const DECODE_KEY = 'yL/M=zNa0bcPQdReSfTgUhViWjXkYIZmnpo+qArOBslCt2D3uE4Fv5G6wH178xJ9K'
+const KEY = 'yL/M=zNa0bcPQdReSfTgUhViWjXkYIZmnpo+qArOBslCt2D3uE4Fv5G6wH178xJ9K'
 
-/** 백업 글의 index.html 파일 */
+/** Sia Skynet 업로드 주소 */
+const SKYNET_ENDPOINT_UPLOAD = 'https://siasky.net'
+
+/** Sia Skynet 다운로드 주소 */
+const SKYNET_ENDPOINT_DOWNLOAD = 'https://siasky.net'
+
+/** 신문고 익명 댓글 닉네임 */
+const COMMENT_NICKNAME = 'ㅇㅇ'
+
+/** 신문고 익명 댓글 비밀번호, 비어있다면 무작위 생성 */
+const COMMENT_PASSWORD = null
+
+/** 항상 익명으로 신문고 댓글을 작성할지? */
+const ALWAYS_ANONYMOUS = false
+
+/** 게시글 백업 디렉터리 내 index.html */
 const INDEX = /*html*/`
 <!Doctype HTML>
 <html>
@@ -47,6 +62,16 @@ const INDEX = /*html*/`
   </style>
 </head>
 <body>
+  <ul>
+    <li>
+      <b><a href="https://github.com/toriato/userscripts/blob/master/dcinside.reporter.user.js">dcinside.reporter.user.js</a></b>
+      by
+      <b><a href="https://gallog.dcinside.com/springkat">애옹이도둑</a></b>
+    </li>
+    <li><a href="index.json">메타데이터 받기 (JSON)</a></li>
+    <li><a href="attachments">첨부 파일 받기 (ZIP)</a></li>
+  </ul>
+
   <article>
     <h3 class="title">
       <span data-property="category"></span>
@@ -61,7 +86,6 @@ const INDEX = /*html*/`
     fetch('index.json')
       .then(res => res.json())
       .then(metadata => {
-        // 게시글 정보에 맞게 교체하기
         for (let element of document.querySelectorAll('[data-property]')) {
           const key = element.dataset.property
 
@@ -72,7 +96,7 @@ const INDEX = /*html*/`
         }
       })
       .catch(e => {
-        alert('게시글 메타데이터를 불러오는 중 오류가 발생했습니다:\\n' + e.message)
+        alert('메타데이터를 불러오는 중 오류가 발생했습니다:\\n' + e.message)
         console.error(e)
       })
   </script>
@@ -104,22 +128,7 @@ if (isMobile) {
 }
 
 /**
- * 비동기로 웹 요청을 실행합니다
- * @param {Object} options
- * @returns {Promise<Object>}
- */
-function request(options) {
-  return new Promise((resolve, reject) => {
-    options.onabort = () => reject('사용자가 작업을 취소했습니다')
-    options.ontimeout = () => reject('작업 시간이 초과됐습니다')
-    options.onerror = reject
-    options.onload = resolve
-    GM_xmlhttpRequest(options)
-  })
-}
-
-/**
- * 디시인사이드 서비스 코드를 복호화합니다
+ * 난독화된 디시인사이드 서비스 코드를 복호화합니다
  * @param {string} keys 페이지에서 제공한 난독화된 키
  * @param {string} code 난독화된 서비스 코드 (service_code) 
  * @returns {string} 복호화된 서비스 코드
@@ -131,7 +140,7 @@ function deobfuscate(keys, code) {
 
   for (let c = 0; c < keys.length;) {
     for (let i = 0; i < k.length; i++)
-      k[i] = DECODE_KEY.indexOf(keys.charAt(c++))
+      k[i] = KEY.indexOf(keys.charAt(c++))
 
     o.push(k[0] << 2 | k[1] >> 4)
     if (k[2] != 64) o.push((15 & k[1]) << 4 | k[2] >> 2)
@@ -155,6 +164,42 @@ function deobfuscate(keys, code) {
     })
 
   return o.join('')
+}
+
+/**
+ * 무작위 문자열을 생성합니다
+ * @returns {string} 무작위 문자열
+ */
+function generateRandomString() {
+  return (Math.random() + 1).toString(36).substring(2)
+}
+
+/**
+ * Blob 의 해시 문자열을 구합니다
+ * @param {Blob} blob
+ * @returns {Promise<string>} 해시 문자열
+ */
+async function hashBlob(algorithm, blob) {
+  const buffer = await blob.arrayBuffer()
+  const hash = await crypto.subtle.digest(algorithm, buffer)
+  const hashArray = Array.from(new Uint8Array(hash))
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+  return hashHex
+}
+
+/**
+ * 비동기로 웹 요청을 실행합니다
+ * @param {Object} options
+ * @returns {Promise<Object>}
+ */
+function fetch(options) {
+  return new Promise((resolve, reject) => {
+    options.onabort = () => reject('사용자가 작업을 취소했습니다')
+    options.ontimeout = () => reject('작업 시간이 초과됐습니다')
+    options.onerror = reject
+    options.onload = resolve
+    GM_xmlhttpRequest(options)
+  })
 }
 
 /**
@@ -185,17 +230,17 @@ function fetchArticle() {
 }
 
 /**
- * 현재 갤러리 글 목록에서 신문고 글을 찾아 보관합니다
+ * 현재 갤러리의 신문고 글을 찾아 유저스크립트 저장 공간에 저장합니다
  * @returns {Promise<void>}
  */
 async function fetchReportArticle() {
   // 모바일 디시인사이드 API 로 글 목록 불러오기
-  const { response } = await request({
+  const { response } = await fetch({
     method: 'POST',
     url: 'https://m.dcinside.com/ajax/response-list',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     responseType: 'json',
-    data: `id=${galleryId}`
+    data: new URLSearchParams({ id: galleryId }).toString()
   })
 
   for (let article of response.gall_list.data) {
@@ -218,7 +263,7 @@ async function fetchReportArticle() {
 async function fetchServiceCode() {
   const reportArticleId = GM_getValue(galleryId, 0)
 
-  const { responseText, status } = await request({
+  const { responseText, status } = await fetch({
     method: 'GET',
     // TODO: 미니 갤러리 지원하기, 엔드포인트 지정 필요 (/mgallery -> /mini)
     url: `https://gall.dcinside.com/mgallery/board/view/?id=${galleryId}&no=${reportArticleId}`
@@ -238,27 +283,15 @@ async function fetchServiceCode() {
 }
 
 /**
- * Blob 의 해시 문자열을 구합니다
- * @param {Blob} blob
- * @returns {Promise<string>} 해시 문자열
- */
-async function hashBlob(algorithm, blob) {
-  const buffer = await blob.arrayBuffer()
-  const hash = await crypto.subtle.digest(algorithm, buffer)
-  const hashArray = Array.from(new Uint8Array(hash))
-  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
-  return hashHex
-}
-
-/**
  * 현재 글에 포함된 파일과 본문 내용을 File 배열로 변환합니다
+ * @param {Article} article 게시글 정보
  * @returns {Promise<File[]>}
  */
-async function articleToFiles() {
+async function articleToFiles(article) {
   const currentDate = new Date()
   const metadata = {
     href: location.href,
-    article: fetchArticle(),
+    article,
     backupAt: currentDate.toString(),
     backupAtTimestamp: +currentDate,
   }
@@ -277,7 +310,7 @@ async function articleToFiles() {
   // 원본 주소를 가지고 있는 모든 요소를 파일로 백업하기
   for (let element of content.querySelectorAll('[src]')) {
     const url = element.getAttribute('src')
-    const p = request({
+    const p = fetch({
       method: 'GET',
       url,
       headers: { Referer: 'https://gall.dcinside.com' }, // 디시인사이드 이미지는 레퍼 값을 요구
@@ -379,16 +412,16 @@ async function articleToFiles() {
  * @param {File[]} files 
  * @returns {Promise<string>} Skylink
  */
-async function uploadFilesToSkynet(files) {
+async function submitFilesToSkynet(files) {
   const data = new FormData()
 
   for (let file of files) {
     data.append('files[]', file)
   }
 
-  const { response } = await request({
+  const { response } = await fetch({
     method: 'POST',
-    url: 'https://siasky.net/skynet/skyfile?filename=undefined',
+    url: SKYNET_ENDPOINT_UPLOAD + '/skynet/skyfile?filename=undefined',
     responseType: 'json',
     data
   })
@@ -397,62 +430,100 @@ async function uploadFilesToSkynet(files) {
     throw new Error('스카이넷 파일 업로드에 실패했습니다')
   }
 
-  return `https://siasky.net/${response.skylink}`
+  return response.skylink
 }
 
-async function report() {
-  const lines = [`https://m.dcinside.com/board/${galleryId}/${articleId}`]
-
-  {
-    const files = await articleToFiles()
-    const skylink = await uploadFilesToSkynet(files)
-    lines.push(skylink)
-  }
-
-  return
-
-  {
-    const { dataset } = document.querySelector('.gall_writer')
-    const user = `${dataset.nick} (${dataset.uid}${dataset.ip})`
-    const head = document.querySelector('.title_headtext').textContent.trim()
-    const subject = document.querySelector('.title_subject').textContent.trim()
-    lines.push(`${user} / ${head} ${subject}`)
-  }
-
-  const code = await fetchServiceCode()
-  const payload = {
-    _GALLTYPE_: 'M',
-    id: galleryId,
-    no: GM_getValue(galleryId),
-    name: 'ㅇㅇ',
-    password: (Math.random() + 1).toString(36).substring(2),
-    memo: lines.join('\n'),
-    check_6: 1,
-    check_7: 1,
-    check_8: 1,
-    check_9: 1,
-    service_code: code,
-  }
-
-  const { responseText } = await request({
+/**
+ * 새 댓글을 만듭니다
+ * @param {Object} payload 
+ * @returns {Promise<string>} 작성된 새 댓글 아이디
+ */
+async function submitComment(payload) {
+  const { responseText } = await fetch({
     method: 'POST',
     url: 'https://gall.dcinside.com/board/forms/comment_submit',
+    // anonymous 옵션이 true 라면 기존 쿠키를 전송하지도 반환된 쿠키를 저장하지도 않음
+    anonymous: ALWAYS_ANONYMOUS,
+    // 댓글 작성 요청할 때 서버에서 확인하는 필수 헤더들
     headers: {
       Referer: 'https://gall.dcinside.com',
       'Content-Type': 'application/x-www-form-urlencoded',
       'X-Requested-With': 'XMLHttpRequest'
     },
-    data: Object.entries(payload).map(v => v.join('=')).join('&')
+    data: new URLSearchParams(payload).toString()
   })
 
   // 댓글이 정상적으로 작성됐다면 댓글 번호를 반환해주므로
   // 모두 숫자가 아니라면 오류로 처리하기
   if (!responseText.match(/^\d+$/)) {
-    alert(responseText)
+    throw new Error(responseText)
+  }
+
+  return parseInt(responseText, 10)
+}
+
+async function submitReport() {
+  const article = fetchArticle()
+  const payload = {
+    // 갤러리 종류: 마이너 'M', 미니 'MI'
+    _GALLTYPE_: 'M',
+
+    // 갤러리 아이디와 게시글 번호
+    id: galleryId,
+    no: GM_getValue(galleryId),
+
+    // 유동일 때 사용되는 작성자 정보
+    name: COMMENT_NICKNAME,
+    password: COMMENT_PASSWORD ? COMMENT_PASSWORD : generateRandomString(),
+
+    // 댓글 내용
+    memo: '',
+
+    // 아마도... 중복 댓글인지 확인하기 위한 페이로드, 무작위 값을 넣을 필요는 없음
+    check_6: generateRandomString(),
+    check_7: generateRandomString(),
+    check_8: generateRandomString(),
+    check_9: generateRandomString(),
+
+    // 자동 입력을 방지하기 위해 클라이언트 측에서 복호화 처리하는 토큰 비스무리한 값
+    service_code: null,
+  }
+
+  let skylink
+
+  await Promise.all([
+    fetchServiceCode()
+      .then(code => payload.service_code = code),
+
+    articleToFiles(article)
+      .then(files => submitFilesToSkynet(files))
+      .then(v => skylink = v)
+  ])
+
+  if (!payload.service_code) {
     return
   }
 
-  alert('신문고에 댓글을 올렸습니다')
+  // 게시글 작성자 정보와 말머리, 제목
+  payload.memo += `${article.nickname} (${article.username}) ${article.category} ${article.subject}`
+
+  // 원본 게시글 주소
+  payload.memo += `\nhttps://m.dcinside.com/board/${article.galleryId}/${article.articleId}`
+
+  // 백업 게시글 주소
+  payload.memo += `\n${SKYNET_ENDPOINT_DOWNLOAD}/${skylink}`
+
+  // 신문고 글에 댓글 작성하기
+  const reportCommentId = await submitComment(payload)
+  return reportCommentId
 }
 
-document.querySelector('.btn_report').addEventListener('click', report)
+document.querySelector('.btn_report')
+  .addEventListener('click', () => {
+    submitReport()
+      .then(reportCommentId => alert('신문고에 새 댓글을 올렸습니다: ' + reportCommentId))
+      .catch(e => {
+        alert('신문고 댓글 작성 중 오류가 발생했습니다:\n' + e.message)
+        console.error(e)
+      })
+  })

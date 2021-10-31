@@ -1,15 +1,15 @@
 // ==UserScript==
-// @name          디시인사이드 신문고 버튼
-// @namespace     https://github.com/toriato/userscripts/dcinside.reporter.user.js
-// @match         https://gall.dcinside.com/mgallery/board/view/*
-// @match         https://gall.dcinside.com/mini/board/view/*
-// @match         https://m.dcinside.com/board/*
-// @run-at        document-end
-// @noframes
-// @require       https://unpkg.com/js-sha1@0.6.0/src/sha1.js
-// @grant         GM_getValue
-// @grant         GM_setValue
-// @grant         GM_xmlhttpRequest
+// @name        dcinside.reporter.user.js
+// @namespace   https://github.com/toriato/userscripts/dcinside.reporter.user.js
+// @description 디시인사이드에서 신문고 글이 있는 마이너 또는 미니 갤러리에 신고 댓글을 자동으로 만들어 올려주는 버튼을 추가합니다
+// @icon        https://nstatic.dcinside.com/dc/m/img/dcinside_icon.png
+// @match       https://gall.dcinside.com/mgallery/board/view/*
+// @match       https://gall.dcinside.com/mini/board/view/*
+// @match       https://m.dcinside.com/board/*
+// @run-at      document-end
+// @grant       GM_getValue
+// @grant       GM_setValue
+// @grant       GM_xmlhttpRequest
 // ==/UserScript==
 
 /**

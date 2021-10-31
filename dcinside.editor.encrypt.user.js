@@ -1,16 +1,16 @@
 // ==UserScript==
-// @name          디시인사이드 편집기 암호화 / 복호화 도구
-// @namespace     https://github.com/toriato/userscripts/dcinside.editor.encrypt.user.js
-// @match         https://gall.dcinside.com/board/write/*
-// @match         https://gall.dcinside.com/board/view/*
-// @match         https://gall.dcinside.com/mgallery/board/write/*
-// @match         https://gall.dcinside.com/mgallery/board/view/*
-// @match         https://gall.dcinside.com/mini/board/write/*
-// @match         https://gall.dcinside.com/mini/board/view/*
-// @require       https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js
-// @run-at        document-end
-// @noframes
-// @version 1
+// @name        dcinside.editor.encrypt.user.js
+// @namespace   https://github.com/toriato/userscripts/dcinside.editor.encrypt.user.js
+// @description 디시인사이드에서 글을 작성하거나 열람할 때 AES를 사용해 암호화합니다 
+// @icon        https://nstatic.dcinside.com/dc/m/img/dcinside_icon.png
+// @match       https://gall.dcinside.com/board/write/*
+// @match       https://gall.dcinside.com/board/view/*
+// @match       https://gall.dcinside.com/mgallery/board/write/*
+// @match       https://gall.dcinside.com/mgallery/board/view/*
+// @match       https://gall.dcinside.com/mini/board/write/*
+// @match       https://gall.dcinside.com/mini/board/view/*
+// @require     https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js
+// @run-at      document-end
 // ==/UserScript==
 
 if ('Editor' in window) {

@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name        점포경영시스템+
 // @namespace   https://github.com/toriato/userscript/gsmp.user.js
-// @description 점포경영시스템에 날개를 달아줘요
+// @description GS25 점포경영시스템에 편리 기능을 추가합니다
+// @icon        http://hcvsscn.gsretail.com/install/img/gs25.ico
 // @match       http://hcvsscn.gsretail.com/cssc/index.html
 // @grant       GM_xmlhttpRequest
 // @grant       GM_getValue
-// @noframes
 // ==/UserScript==
 
 const DAY = 24 * 60 * 60 * 1000

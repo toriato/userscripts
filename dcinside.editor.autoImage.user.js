@@ -1,21 +1,19 @@
 // ==UserScript==
-// @name          디시인사이드 자짤 스크립트
-// @namespace     https://github.com/toriato/userscripts/dcinside.editor.autoImage.user.js
-// @match         https://gall.dcinside.com/board/write/*
-// @match         https://gall.dcinside.com/mgallery/board/write/*
-// @match         https://gall.dcinside.com/mini/board/write/*
-// @require       https://unpkg.com/js-sha1@0.6.0/build/sha1.min.js
-// @run-at        document-end
-// @noframes
-// @grant         GM_getValue
-// @grant         GM_setValue
-// @grant         GM_deleteValue
-// @grant         GM_listValues
-// @grant         GM_addStyle
-// @grant         GM_xmlhttpRequest
-// @downloadURL   https://github.com/toriato/userscripts/raw/branch/master/dcinside.editor.autoImage.user.js
-// @supportURL    https://github.com/toriato/userscripts/issues
-// @homepageURL   https://github.com/toriato/userscripts
+// @name        dcinside.editor.autoImage.user.js
+// @namespace   https://github.com/toriato/userscripts/dcinside.editor.autoImage.user.js
+// @description 디시인사이드 글 작성 페이지를 열 때 사용자가 설정한 이미지(자짤)를 자동으로 업로드합니다
+// @icon        https://nstatic.dcinside.com/dc/m/img/dcinside_icon.png
+// @match       https://gall.dcinside.com/board/write/*
+// @match       https://gall.dcinside.com/mgallery/board/write/*
+// @match       https://gall.dcinside.com/mini/board/write/*
+// @require     https://unpkg.com/js-sha1@0.6.0/build/sha1.min.js
+// @run-at      document-end
+// @grant       GM_getValue
+// @grant       GM_setValue
+// @grant       GM_deleteValue
+// @grant       GM_listValues
+// @grant       GM_addStyle
+// @grant       GM_xmlhttpRequest
 // ==/UserScript==
 
 /**

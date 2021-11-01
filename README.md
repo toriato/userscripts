@@ -24,7 +24,7 @@ userscripts
 ### [dcinside.list.refresher.user.js](https://github.com/toriato/userscripts/raw/master/dcinside.list.refresher.user.js)
 디시인사이드 갤러리 목록을 자동으로 새로 고칩니다
 
-### [dcinside.macro.downvote.user.js](https://github.com/toriato/userscripts/raw/master/dcinside.macro.downvote.user.js
+### [dcinside.macro.downvote.user.js](https://github.com/toriato/userscripts/raw/master/dcinside.macro.downvote.user.js)
 디시인사이드 갤러리 목록을 자동으로 새로 고칩니다
 
 ### [dcinside.reporter.user.js](https://github.com/toriato/userscripts/raw/master/dcinside.reporter.user.js)

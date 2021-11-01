@@ -33,7 +33,11 @@ GM_addStyle(/*css*/`
   }
   .preview img {
     max-width: 100%;
-    max-height: 50px;
+    max-height: 100px;
+    cursor: pointer;
+  }
+  .preview img.active {
+    max-height: 100%;
   }
 
   .preview[data-id][data-no] {
@@ -82,11 +86,8 @@ document.addEventListener('mousemove', e => {
   const selectedGalleryId = params.get('id')
   const selectedArticleId = params.get('no')
 
-  const currentGalleryId = $preview.dataset.id
-  const currentArticleId = $preview.dataset.no
-
   // 현재 미리보는 게시글과 일치한다면 작업 종료하기
-  if (currentGalleryId === selectedGalleryId && currentArticleId === selectedArticleId)
+  if ($preview.dataset.id === selectedGalleryId && $preview.dataset.no === selectedArticleId)
     return
 
   // 미리보기 요소 아이디와 게시글 번호 변경하기
@@ -98,22 +99,25 @@ document.addEventListener('mousemove', e => {
     method: 'GET',
     url: `https://m.dcinside.com/board/${selectedGalleryId}/${selectedArticleId}`,
     headers: { 'User-Agent': '(Android)' }
-  })
+  }).then(({ responseText }) => {
+    // 본문을 불러온 뒤 다른 게시글이 선택됐다면 무시하기
+    if ($preview.dataset.id !== selectedGalleryId || $preview.dataset.no !== selectedArticleId)
+      return
+
     // 미리보기 요소 속에 본문 내용 넣기
-    .then(({ responseText }) => {
-      const $ = document.createElement('html')
-      $.innerHTML = responseText
+    {
+      const $wrapper = document.createElement('html')
+      $wrapper.innerHTML = responseText
+      $preview.innerHTML = $wrapper.querySelector('.thum-txtin').innerHTML
 
-      const $content = $.querySelector('.thum-txtin')
-
-      for (let $element of $content.querySelectorAll('[data-original]')) {
-        $element.setAttribute('src', $element.dataset.original)
+      for (let $img of $preview.querySelectorAll('img[data-original]')) {
+        $img.setAttribute('src', $img.dataset.original)
+        $img.addEventListener('click', () => $img.classList.toggle('active'))
       }
+    }
 
-      $preview.innerHTML = $content.innerHTML
-    })
     // 미리보기 요소 위치 다시 계산하기
-    .then(() => {
+    {
       const previewRect = $preview.getBoundingClientRect()
       const articleRect = $article.getBoundingClientRect()
       const bodyRect = document.body.getBoundingClientRect()
@@ -139,6 +143,6 @@ document.addEventListener('mousemove', e => {
       // 미리보기 요소 위치 설정하기
       $preview.style.left = x + 'px'
       $preview.style.top = y + 'px'
-    })
-
+    }
+  })
 })

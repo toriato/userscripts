@@ -6,6 +6,8 @@
 // @match       https://gall.dcinside.com/*
 // @match       https://m.dcinside.com/board/*
 // @run-at      document-start
+// @downloadURL https://github.com/toriato/userscripts/raw/master/dcinside.fix.missingGallery.user.js
+// @supportURL  https://github.com/toriato/userscripts/issues
 // ==/UserScript==
 
 // TODO: 진짜 없는 갤러리인지 확인 필요 -> 연속 새로고침 제한?

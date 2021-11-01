@@ -11,6 +11,8 @@
 // @match       https://gall.dcinside.com/mini/board/view/*
 // @require     https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js
 // @run-at      document-end
+// @downloadURL https://github.com/toriato/userscripts/raw/master/dcinside.editor.encrypt.user.js
+// @supportURL  https://github.com/toriato/userscripts/issues
 // ==/UserScript==
 
 if ('Editor' in window) {

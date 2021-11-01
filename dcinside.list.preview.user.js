@@ -9,6 +9,8 @@
 // @run-at      document-end
 // @grant       GM_addStyle
 // @grant       GM_xmlhttpRequest
+// @downloadURL https://github.com/toriato/userscripts/raw/master/dcinside.list.preview.user.js
+// @supportURL  https://github.com/toriato/userscripts/issues
 // ==/UserScript==
 
 GM_addStyle(/*css*/`

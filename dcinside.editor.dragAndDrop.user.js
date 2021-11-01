@@ -8,6 +8,8 @@
 // @match       https://gall.dcinside.com/mini/board/write/*
 // @run-at      document-end
 // @grant       GM_xmlhttpRequest
+// @downloadURL https://github.com/toriato/userscripts/raw/master/dcinside.editor.dragAndDrop.user.js
+// @supportURL  https://github.com/toriato/userscripts/issues
 // ==/UserScript==
 
 const allowedMIMEs = /image\/(webp|png|jpeg|gif|bmp)/

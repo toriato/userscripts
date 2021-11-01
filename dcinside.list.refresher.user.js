@@ -7,6 +7,8 @@
 // @match       https://gall.dcinside.com/mgallery/board/lists*
 // @match       https://gall.dcinside.com/mini/board/lists*
 // @run-at      document-end
+// @downloadURL https://github.com/toriato/userscripts/raw/master/dcinside.list.refresher.user.js
+// @supportURL  https://github.com/toriato/userscripts/issues
 // ==/UserScript==
 
 (async () => {

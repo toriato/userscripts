@@ -10,6 +10,8 @@
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_xmlhttpRequest
+// @downloadURL https://github.com/toriato/userscripts/raw/master/dcinside.reporter.user.js
+// @supportURL  https://github.com/toriato/userscripts/issues
 // ==/UserScript==
 
 /**

@@ -6,6 +6,8 @@
 // @match       http://hcvsscn.gsretail.com/cssc/index.html
 // @grant       GM_xmlhttpRequest
 // @grant       GM_getValue
+// @downloadURL https://github.com/toriato/userscripts/raw/master/gsmp.user.js
+// @supportURL  https://github.com/toriato/userscripts/issues
 // ==/UserScript==
 
 const DAY = 24 * 60 * 60 * 1000

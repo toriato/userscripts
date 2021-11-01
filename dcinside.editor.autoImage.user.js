@@ -9,11 +9,9 @@
 // @require     https://unpkg.com/js-sha1@0.6.0/build/sha1.min.js
 // @run-at      document-end
 // @grant       GM_getValue
-// @grant       GM_setValue
-// @grant       GM_deleteValue
-// @grant       GM_listValues
-// @grant       GM_addStyle
 // @grant       GM_xmlhttpRequest
+// @downloadURL https://github.com/toriato/userscripts/raw/master/dcinside.editor.autoImage.user.js
+// @supportURL  https://github.com/toriato/userscripts/issues
 // ==/UserScript==
 
 /**

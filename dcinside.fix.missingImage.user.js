@@ -5,6 +5,8 @@
 // @icon        https://nstatic.dcinside.com/dc/m/img/dcinside_icon.png
 // @match       https://gall.dcinside.com/*
 // @grant       GM_xmlhttpRequest
+// @downloadURL https://github.com/toriato/userscripts/raw/master/dcinside.fix.missingImage.user.js
+// @supportURL  https://github.com/toriato/userscripts/issues
 // ==/UserScript==
 
 /**

@@ -2,6 +2,7 @@
 // @name        dcinside.editor.encrypt.user.js
 // @namespace   https://github.com/toriato/userscripts/dcinside.editor.encrypt.user.js
 // @description 디시인사이드에서 글을 작성하거나 열람할 때 AES를 사용해 암호화합니다 
+// @author      Sangha Lee <totoriato@gmail.com>
 // @icon        https://nstatic.dcinside.com/dc/m/img/dcinside_icon.png
 // @match       https://gall.dcinside.com/board/write/*
 // @match       https://gall.dcinside.com/board/view/*

@@ -2,6 +2,7 @@
 // @name        dcinside.list.preview.user.js
 // @namespace   https://github.com/toriato/userscripts/dcinside.list.preview.user.js
 // @description 디시인사이드 갤러리 목록에서 제목 위에 커서를 올려 게시글을 미리 열람합니다
+// @author      Sangha Lee <totoriato@gmail.com>
 // @icon        https://nstatic.dcinside.com/dc/m/img/dcinside_icon.png
 // @require     https://github.com/toriato/userscripts/raw/master/library/fetch.js
 // @match       https://gall.dcinside.com/board/lists*

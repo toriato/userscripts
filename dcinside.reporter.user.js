@@ -2,6 +2,7 @@
 // @name        dcinside.reporter.user.js
 // @namespace   https://github.com/toriato/userscripts/dcinside.reporter.user.js
 // @description 디시인사이드에서 신문고 글이 있는 마이너 또는 미니 갤러리에 신고 댓글을 자동으로 만들어 올려주는 버튼을 추가합니다
+// @author      Sangha Lee <totoriato@gmail.com>
 // @icon        https://nstatic.dcinside.com/dc/m/img/dcinside_icon.png
 // @require     https://github.com/toriato/userscripts/raw/master/library/fetch.js
 // @match       https://gall.dcinside.com/mgallery/board/view/*

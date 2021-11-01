@@ -2,6 +2,7 @@
 // @name        dcinside.fix.missingGallery.user.js
 // @namespace   https://github.com/toriato/userscripts/dcinside.fix.missingGallery.user.js
 // @description 디시인사이드에서 '해당 갤러리는 존재하지 않습니다' 메세지가 발생하면 자동으로 페이지를 새로 고칩니다
+// @author      Sangha Lee <totoriato@gmail.com>
 // @icon        https://nstatic.dcinside.com/dc/m/img/dcinside_icon.png
 // @match       https://gall.dcinside.com/*
 // @match       https://m.dcinside.com/board/*

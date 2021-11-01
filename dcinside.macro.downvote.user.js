@@ -2,6 +2,7 @@
 // @name        dcinside.macro.downvote.user.js
 // @namespace   https://github.com/toriato/userscripts/dcinside.macro.downvote.user.js
 // @description 디시인사이드 게시글 목록 페이지를 열어두면 새로 올라오는 글마다 자동으로 비추를 남깁니다
+// @author      Sangha Lee <totoriato@gmail.com>
 // @icon        https://nstatic.dcinside.com/dc/m/img/dcinside_icon.png
 // @require     https://github.com/toriato/userscripts/raw/master/library/fetch.js
 // @match       https://gall.dcinside.com/board/lists

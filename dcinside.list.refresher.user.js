@@ -2,6 +2,7 @@
 // @name        dcinside.list.refresher.user.js
 // @namespace   https://github.com/toriato/userscripts/dcinside.list.refresher.user.js
 // @description 디시인사이드 갤러리 목록을 자동으로 새로 고칩니다
+// @author      Sangha Lee <totoriato@gmail.com>
 // @icon        https://nstatic.dcinside.com/dc/m/img/dcinside_icon.png
 // @match       https://gall.dcinside.com/board/lists*
 // @match       https://gall.dcinside.com/mgallery/board/lists*

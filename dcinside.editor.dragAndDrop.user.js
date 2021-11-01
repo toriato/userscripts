@@ -2,6 +2,7 @@
 // @name        dcinside.editor.dragAndDrop.user.js
 // @namespace   https://github.com/toriato/userscripts/dcinside.editor.dragAndDrop.user.js
 // @description 디시인사이드 글 작성 편집기에 드래그 앤 드랍으로 파일을 올릴 수 있는 기능을 추가합니다
+// @author      Sangha Lee <totoriato@gmail.com>
 // @icon        https://nstatic.dcinside.com/dc/m/img/dcinside_icon.png
 // @require     https://github.com/toriato/userscripts/raw/master/library/fetch.js
 // @match       https://gall.dcinside.com/board/write/*

@@ -2,6 +2,7 @@
 // @name        점포경영시스템+
 // @namespace   https://github.com/toriato/userscript/gsmp.user.js
 // @description GS25 점포경영시스템에 편리 기능을 추가합니다
+// @author      Sangha Lee <totoriato@gmail.com>
 // @icon        http://hcvsscn.gsretail.com/install/img/gs25.ico
 // @match       http://hcvsscn.gsretail.com/cssc/index.html
 // @grant       GM_xmlhttpRequest

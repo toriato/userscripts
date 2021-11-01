@@ -1,14 +1,15 @@
 // ==UserScript==
-// @name        비추요정
+// @name        dcinside.macro.downvote.user.js
 // @namespace   https://github.com/toriato/userscripts/dcinside.macro.downvote.user.js
-// @description 맘에 들지 않는 갤러리에 비추를 폭격해보세요
+// @description 디시인사이드 게시글 목록 페이지를 열어두면 새로 올라오는 글마다 자동으로 비추를 남깁니다
+// @icon        https://nstatic.dcinside.com/dc/m/img/dcinside_icon.png
 // @match       https://gall.dcinside.com/board/lists
 // @match       https://gall.dcinside.com/mgallery/board/lists
 // @match       https://gall.dcinside.com/mini/board/lists
-// @grant       GM_getValue
-// @grant       GM_setValue
 // @grant       GM_xmlhttpRequest
 // @noframes
+// @downloadURL https://github.com/toriato/userscripts/raw/master/dcinside.macro.downvote.user.js
+// @supportURL  https://github.com/toriato/userscripts/issues
 // ==/UserScript==
 
 function p(d) {

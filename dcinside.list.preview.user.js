@@ -3,6 +3,7 @@
 // @namespace   https://github.com/toriato/userscripts/dcinside.list.preview.user.js
 // @description 디시인사이드 갤러리 목록에서 제목 위에 커서를 올려 게시글을 미리 열람합니다
 // @icon        https://nstatic.dcinside.com/dc/m/img/dcinside_icon.png
+// @require     https://github.com/toriato/userscripts/raw/master/library/fetch.js
 // @match       https://gall.dcinside.com/board/lists*
 // @match       https://gall.dcinside.com/mgallery/board/lists*
 // @match       https://gall.dcinside.com/mini/board/lists*
@@ -16,7 +17,7 @@
 GM_addStyle(/*css*/`
   .preview {
     display: none;
-    position: absolute;
+    position: fixed;
     overflow: hidden;
     overflow-y: auto;
     top: 0;
@@ -50,21 +51,6 @@ $preview.classList.add('preview')
 $preview.innerHTML = 'Hello, World!'
 document.body.appendChild($preview)
 
-/**
- * 비동기로 웹 요청을 실행합니다
- * @param {Object} options
- * @returns {Promise<Object>}
- */
-function fetch(options) {
-  return new Promise((resolve, reject) => {
-    options.onabort = () => reject('사용자가 작업을 취소했습니다')
-    options.ontimeout = () => reject('작업 시간이 초과됐습니다')
-    options.onerror = reject
-    options.onload = resolve
-    GM_xmlhttpRequest(options)
-  })
-}
-
 document.addEventListener('mousemove', e => {
   // 커서가 미리보기 요소 위에 있다면 작업 무시하기
   if (e.target.closest('.preview'))
@@ -94,15 +80,39 @@ document.addEventListener('mousemove', e => {
   $preview.dataset.id = selectedGalleryId
   $preview.dataset.no = selectedArticleId
 
+  // 미리보기 요소 위치 미리 계산해두기
+  let { x, y } = e
+  {
+    const rect = $preview.getBoundingClientRect()
+
+    // 마우스 커서 우측에 공간 만들기
+    x += 100
+
+    // 페이지 우측 넘어가지 않게 조절
+    if (x + rect.width > window.innerWidth)
+      x = window.innerWidth - rect.width
+
+    // 페이지 상단 넘어가지 않게 조절
+    if (y < 0)
+      y = 0
+
+    // 페이지 하단 넘어가지 않게 조절
+    if (y + rect.height > window.innerHeight)
+      y = window.innerHeight - rect.height
+  }
+
   // 디시인사이드 모바일 웹 페이지를 통해 게시글 본문 내용 불러오기
   fetch({
-    method: 'GET',
     url: `https://m.dcinside.com/board/${selectedGalleryId}/${selectedArticleId}`,
     headers: { 'User-Agent': '(Android)' }
   }).then(({ responseText }) => {
     // 본문을 불러온 뒤 다른 게시글이 선택됐다면 무시하기
     if ($preview.dataset.id !== selectedGalleryId || $preview.dataset.no !== selectedArticleId)
       return
+
+    // 미리보기 요소 위치 설정하기
+    $preview.style.left = x + 'px'
+    $preview.style.top = y + 'px'
 
     // 미리보기 요소 속에 본문 내용 넣기
     {
@@ -114,35 +124,6 @@ document.addEventListener('mousemove', e => {
         $img.setAttribute('src', $img.dataset.original)
         $img.addEventListener('click', () => $img.classList.toggle('active'))
       }
-    }
-
-    // 미리보기 요소 위치 다시 계산하기
-    {
-      const previewRect = $preview.getBoundingClientRect()
-      const articleRect = $article.getBoundingClientRect()
-      const bodyRect = document.body.getBoundingClientRect()
-
-      let x = e.pageX
-      let y = window.scrollY + articleRect.top - previewRect.height / 2
-
-      // 마우스 커서 우측에 공간 만들기
-      x += 100
-
-      // 페이지 우측 넘어가지 않게 조절
-      if (x + previewRect.width > bodyRect.width)
-        x = bodyRect.width - previewRect.width
-
-      // 페이지 상단 넘어가지 않게 조절
-      if (y < window.scrollY)
-        y = window.scrollY
-
-      // 페이지 하단 넘어가지 않게 조절
-      if (y + previewRect.height > window.scrollY + window.innerHeight)
-        y = window.scrollY + window.innerHeight - previewRect.height
-
-      // 미리보기 요소 위치 설정하기
-      $preview.style.left = x + 'px'
-      $preview.style.top = y + 'px'
     }
   })
 })

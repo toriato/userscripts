@@ -3,6 +3,7 @@
 // @namespace   https://github.com/toriato/userscripts/dcinside.reporter.user.js
 // @description 디시인사이드에서 신문고 글이 있는 마이너 또는 미니 갤러리에 신고 댓글을 자동으로 만들어 올려주는 버튼을 추가합니다
 // @icon        https://nstatic.dcinside.com/dc/m/img/dcinside_icon.png
+// @require     https://github.com/toriato/userscripts/raw/master/library/fetch.js
 // @match       https://gall.dcinside.com/mgallery/board/view/*
 // @match       https://gall.dcinside.com/mini/board/view/*
 // @match       https://m.dcinside.com/board/*
@@ -190,21 +191,6 @@ async function hashBlob(algorithm, blob) {
 }
 
 /**
- * 비동기로 웹 요청을 실행합니다
- * @param {Object} options
- * @returns {Promise<Object>}
- */
-function fetch(options) {
-  return new Promise((resolve, reject) => {
-    options.onabort = () => reject('사용자가 작업을 취소했습니다')
-    options.ontimeout = () => reject('작업 시간이 초과됐습니다')
-    options.onerror = reject
-    options.onload = resolve
-    GM_xmlhttpRequest(options)
-  })
-}
-
-/**
  * 현재 페이지에서 글 정보를 가져옵니다
  * @returns {Article}
  */
@@ -266,7 +252,6 @@ async function fetchServiceCode() {
   const reportArticleId = GM_getValue(galleryId, 0)
 
   const { responseText, status } = await fetch({
-    method: 'GET',
     // TODO: 미니 갤러리 지원하기, 엔드포인트 지정 필요 (/mgallery -> /mini)
     url: `https://gall.dcinside.com/mgallery/board/view/?id=${galleryId}&no=${reportArticleId}`
   })
@@ -313,7 +298,6 @@ async function articleToFiles(article) {
   for (let element of content.querySelectorAll('[src]')) {
     const url = element.getAttribute('src')
     const p = fetch({
-      method: 'GET',
       url,
       headers: { Referer: 'https://gall.dcinside.com' }, // 디시인사이드 이미지는 레퍼 값을 요구
       responseType: 'blob'

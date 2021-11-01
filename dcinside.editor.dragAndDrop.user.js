@@ -3,6 +3,7 @@
 // @namespace   https://github.com/toriato/userscripts/dcinside.editor.dragAndDrop.user.js
 // @description 디시인사이드 글 작성 편집기에 드래그 앤 드랍으로 파일을 올릴 수 있는 기능을 추가합니다
 // @icon        https://nstatic.dcinside.com/dc/m/img/dcinside_icon.png
+// @require     https://github.com/toriato/userscripts/raw/master/library/fetch.js
 // @match       https://gall.dcinside.com/board/write/*
 // @match       https://gall.dcinside.com/mgallery/board/write/*
 // @match       https://gall.dcinside.com/mini/board/write/*
@@ -22,17 +23,6 @@ const page = {
 page.editor.$canvas = document.querySelector('#tx_canvas_wysiwyg')
 page.editor.$container = page.editor.$canvas.contentDocument.querySelector('.tx-content-container')
 
-function request(details) {
-  return new Promise((resolve, reject) => {
-    details.method = details.method ? details.method : 'GET'
-    details.onload = resolve
-    details.onerror = reject
-    details.onabort = () => reject(new Error('사용자가 작업을 취소했습니다'))
-    details.ontimeout = () => reject(new Error('요청 시간이 초과됐습니다'))
-    GM_xmlhttpRequest(details)
-  })
-}
-
 async function uploadImage(file) {
   const gallery = page.params.get('id')
   const data = new FormData()
@@ -44,9 +34,9 @@ async function uploadImage(file) {
   data.append('gall_id', gallery)
   data.append('files[]', file, file.name)
 
-  const res = await request({
-    url: 'https://upimg.dcinside.com/upimg_file.php?id=' + gallery,
+  const res = await fetch({
     method: 'POST',
+    url: 'https://upimg.dcinside.com/upimg_file.php?id=' + gallery,
     responseType: 'json',
     data
   })

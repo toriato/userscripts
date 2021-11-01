@@ -152,8 +152,9 @@ async function attachPrefixImage() {
 }
 
 // 갤러리 별 옵션 불러오기
-/** @type {Option} */
 const params = (new URL(location.href)).searchParams
+
+/** @type {Option} */
 const options = GM_getValue(`option_${params.get('id')}`, GM_getValue('option', {}))
 
 if (!options.id) options.id = params.get('id')

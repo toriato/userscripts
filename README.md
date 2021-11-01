@@ -21,6 +21,12 @@ userscripts
 ### [dcinside.reporter.user.js](https://github.com/toriato/userscripts/raw/master/dcinside.reporter.user.js)
 디시인사이드에서 신문고 글이 있는 마이너 또는 미니 갤러리에 신고 댓글을 자동으로 만들어 올려주는 버튼을 추가합니다
 
+### [dcinside.list.preview.user.js](https://github.com/toriato/userscripts/raw/master/dcinside.list.preview.user.js)
+디시인사이드 갤러리 목록에서 제목 위에 커서를 올려 게시글을 미리 열람합니다
+
+### [dcinside.reporter.user.js](https://github.com/toriato/userscripts/raw/master/dcinside.reporter.user.js)
+디시인사이드 갤러리 목록을 자동으로 새로 고칩니다
+
 ## 기타
 
 ### [gsmp.user.js](https://github.com/toriato/userscripts/raw/master/gsmp.user.js)

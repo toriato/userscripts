@@ -20,7 +20,7 @@ XMLHttpRequest.addFilter = function (filter, callback) {
 }
 
 XMLHttpRequest.prototype.open = function () {
-  for (let { filter, callback } of this.filters) {
+  for (let { filter, callback } of XMLHttpRequest.filters) {
     if (filter.call(this, ...arguments) === true) {
       this.callback = callback
     }

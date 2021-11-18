@@ -8,6 +8,7 @@
 // @match       https://gall.dcinside.com/mgallery/board/write/*
 // @match       https://gall.dcinside.com/mini/board/write/*
 // @require     https://unpkg.com/js-sha1@0.6.0/build/sha1.min.js
+// @require     https://github.com/toriato/userscripts/raw/master/library/fetch.js
 // @run-at      document-end
 // @grant       GM_getValue
 // @grant       GM_xmlhttpRequest
@@ -107,17 +108,11 @@ async function attachPrefixImage() {
     options.useRandomFilename ? `${sha1(new Date)}.${image.name.split('.').pop()}` : image.name)
 
   // 이미지 업로드
-  const res = await new Promise((resolve, reject) => {
-    GM_xmlhttpRequest({
-      url: 'https://upimg.dcinside.com/upimg_file.php?id=' + options.id,
-      method: 'POST',
-      responseType: 'json',
-      data,
-      onload: resolve,
-      onerror: reject,
-      onabort: () => reject(new Error('사용자가 작업을 취소했습니다')),
-      ontimeout: () => reject(new Error('업로드가 대기 시간이 초과되어 작업이 취소됐습니다'))
-    })
+  const res = await fetch({
+    url: 'https://upimg.dcinside.com/upimg_file.php?id=' + options.id,
+    method: 'POST',
+    responseType: 'json',
+    data,
   })
 
   if (res.responseText.includes('Web firewall security policies have been blocked')) {

@@ -10,18 +10,20 @@
 // ==/UserLibrary==
 // ==/UserScript==
 
-XMLHttpRequest.prototype._open = XMLHttpRequest.prototype.open
-XMLHttpRequest.prototype._send = XMLHttpRequest.prototype.send
-XMLHttpRequest.prototype.callback = null
-
 XMLHttpRequest.filters = []
 XMLHttpRequest.addFilter = function (filter, callback) {
   this.filters.push({ filter, callback })
 }
 
+XMLHttpRequest.prototype._open = XMLHttpRequest.prototype.open
+XMLHttpRequest.prototype._send = XMLHttpRequest.prototype.send
+
+XMLHttpRequest.prototype.preventDefault = false
+XMLHttpRequest.prototype.callback = undefined
+
 XMLHttpRequest.prototype.open = function () {
   for (let { filter, callback } of XMLHttpRequest.filters) {
-    if (filter.call(this, ...arguments) === true) {
+    if (filter.call(this, ...arguments)) {
       this.callback = callback
     }
   }
@@ -31,10 +33,10 @@ XMLHttpRequest.prototype.open = function () {
 
 XMLHttpRequest.prototype.send = function (data) {
   if (this.callback) {
-    if (this.callback(data) !== true) {
-      return
-    }
+    data = this.callback(data)
   }
 
-  this._send(data)
+  if (!this.preventDefault) {
+    this._send(data)
+  }
 }

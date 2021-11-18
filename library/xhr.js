@@ -18,10 +18,10 @@ XMLHttpRequest.addFilter = function (filter, callback) {
 XMLHttpRequest.prototype._open = XMLHttpRequest.prototype.open
 XMLHttpRequest.prototype._send = XMLHttpRequest.prototype.send
 
-XMLHttpRequest.prototype.preventDefault = false
-XMLHttpRequest.prototype.callbacks = []
-
 XMLHttpRequest.prototype.open = function () {
+  this.preventDefault = false
+  this.callbacks = []
+
   for (let { filter, callback } of XMLHttpRequest.filters) {
     if (filter.call(this, ...arguments)) {
       this.callbacks.push(callback)
@@ -33,7 +33,7 @@ XMLHttpRequest.prototype.open = function () {
 
 XMLHttpRequest.prototype.send = function (data) {
   for (let callback of this.callbacks) {
-    data = callback(data)
+    data = callback.call(this, data)
   }
 
   if (!this.preventDefault) {

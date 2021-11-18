@@ -11,45 +11,33 @@
 // @match       https://gall.dcinside.com/mini/board/write/*
 // @match       https://gall.dcinside.com/mini/board/view/*
 // @require     https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js
+// @require     https://github.com/toriato/userscripts/raw/master/library/xhr.js
 // @run-at      document-end
 // @downloadURL https://github.com/toriato/userscripts/raw/master/dcinside.editor.encrypt.user.js
 // @supportURL  https://github.com/toriato/userscripts/issues
 // ==/UserScript==
 
-if ('Editor' in window) {
-  XMLHttpRequest.prototype._open = XMLHttpRequest.prototype.open
-  XMLHttpRequest.prototype._send = XMLHttpRequest.prototype.send
+XMLHttpRequest.addFilter(
+  (method, url) => method === 'POST' && url === '/board/forms/article_submit',
+  function (data) {
+    const params = new URLSearchParams(data)
+    const content = params.get('memo')
+    const passphrase = prompt('비밀번호를 입력해주세요')
+    const payload = [
+      '1', // version
+      'AES', // type
+      CryptoJS.SHA1(content).toString(), // sha1 hash of original content
+      CryptoJS.AES.encrypt(content, passphrase).toString() // encrypted text
+    ]
 
-  XMLHttpRequest.prototype.open = function (method, url) {
-    if (url === '/board/forms/article_submit') {
-      this._hooked = true
-    }
-
-    this._open(...arguments)
+    params.set('memo', payload.join(':'))
+    return params.toString()
   }
+)
 
-  XMLHttpRequest.prototype.send = function (data) {
-    if (this._hooked) {
-      const passphrase = prompt('비밀번호를 입력해주세요')
+const $content = document.querySelector('.write_div')
 
-      const params = new URLSearchParams(data)
-      const content = params.get('memo')
-      const payload = [
-        '1', // version
-        'AES', // type
-        CryptoJS.SHA1(content).toString(), // sha1 hash of original content
-        CryptoJS.AES.encrypt(content, passphrase).toString() // encrypted text
-      ]
-
-      params.set('memo', payload.join(':'))
-
-      data = params.toString()
-    }
-
-    this._send(data)
-  }
-} else {
-  const $content = document.querySelector('.write_div')
+if ($content) {
   const payload = $content.textContent.trim().split(':')
 
   if (payload[1] === 'AES') {

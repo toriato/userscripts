@@ -13,9 +13,9 @@
 // @match       https://gall.dcinside.com/mini/board/write/*
 // @run-at      document-end
 // @grant       GM_xmlhttpRequest
-// @updateURL   https://openuserjs.org/meta/toriato/dcinside.accountRandomizer.meta.js
-// @downloadURL https://github.com/toriato/userscripts/raw/master/dcinside.accountRandomizer.user.js
+// @updateURL   https://openuserjs.org/meta/toriato/DCInside_Account_Randomizer.meta.js
 // @supportURL  https://github.com/toriato/userscripts/issues
+// @homepageURL https://github.com/toriato/userscripts
 // ==/UserScript==
 
 /**

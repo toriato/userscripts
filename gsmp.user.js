@@ -1,14 +1,17 @@
 // ==UserScript==
-// @name        점포경영시스템+
-// @namespace   https://github.com/toriato/userscript/gsmp.user.js
+// @name        GS25 Management Plus
 // @description GS25 점포경영시스템에 편리 기능을 추가합니다
-// @author      Sangha Lee <totoriato@gmail.com>
+// @version     1.0.0
+// @author      toriato
+// @copyright   2021, Sangha Lee
+// @license     MIT
 // @icon        http://hcvsscn.gsretail.com/install/img/gs25.ico
 // @match       http://hcvsscn.gsretail.com/cssc/index.html
 // @grant       GM_xmlhttpRequest
 // @grant       GM_getValue
-// @downloadURL https://github.com/toriato/userscripts/raw/master/gsmp.user.js
+// @updateURL   https://openuserjs.org/meta/toriato/GS25_Management_Plus.user.js
 // @supportURL  https://github.com/toriato/userscripts/issues
+// @homepageURL https://github.com/toriato/userscripts
 // ==/UserScript==
 
 const DAY = 24 * 60 * 60 * 1000

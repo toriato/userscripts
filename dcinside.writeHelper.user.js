@@ -15,9 +15,9 @@
 // @run-at      document-end
 // @grant       GM_getValue
 // @grant       GM_xmlhttpRequest
-// @updateURL   https://openuserjs.org/meta/toriato/dcinside.writeHelper.user.js
-// @downloadURL https://openuserjs.org/install/toriato/dcinside.writeHelper.user.js
+// @updateURL   https://openuserjs.org/meta/toriato/DCInside_Write_Helper.user.js
 // @supportURL  https://github.com/toriato/userscripts/issues
+// @homepageURL https://github.com/toriato/userscripts
 // ==/UserScript==
 
 /**

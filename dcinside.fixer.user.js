@@ -9,9 +9,9 @@
 // @match       https://gall.dcinside.com/*
 // @match       https://m.dcinside.com/board/*
 // @run-at      document-start
-// @updateURL   https://openuserjs.org/meta/toriato/dcinside.fix.user.js
-// @downloadURL https://openuserjs.org/install/toriato/dcinside.fix.user.js
+// @updateURL   https://openuserjs.org/meta/toriato/DCInside_Fixer.user.js
 // @supportURL  https://github.com/toriato/userscripts/issues
+// @homepageURL https://github.com/toriato/userscripts
 // ==/UserScript==
 
 // 존재하는 갤러리임에도 불구하고 '해당 갤러리가 존재하지 않습니다' 오류 메세지 발생 시

@@ -14,10 +14,9 @@
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_xmlhttpRequest
-// @updateURL   https://openuserjs.org/meta/toriato/dcinside.reportHelper.user.js
-// @downloadURL https://openuserjs.org/install/toriato/dcinside.reportHelper.user.js
-// @homepageURL https://github.com/toriato/userscripts
+// @updateURL   https://openuserjs.org/meta/toriato/DCInside_Report_Helper.user.js
 // @supportURL  https://github.com/toriato/userscripts/issues
+// @homepageURL https://github.com/toriato/userscripts
 // ==/UserScript==
 
 /**

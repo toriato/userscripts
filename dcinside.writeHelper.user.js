@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        dcinside write helper
+// @name        DCInside Write Helper
 // @description 디시인사이드에 글을 작성할 때 자동으로 자짤, 말머리, 말꼬리 등을 추가합니다
 // @version     1.0.0
 // @author      toriato
@@ -7,8 +7,8 @@
 // @license     MIT
 // @icon        https://nstatic.dcinside.com/dc/m/img/dcinside_icon.png
 // @require     https://unpkg.com/js-sha1@0.6.0/build/sha1.min.js
-// @require     https://github.com/toriato/userscripts/raw/master/library/fetch.js
-// @require     https://github.com/toriato/userscripts/raw/master/library/xhr.js
+// @require     https://openuserjs.org/src/libs/toriato/Promisified_GM_xmlhttpRequest.min.js
+// @require     https://openuserjs.org/src/libs/toriato/XHR_Hooks.min.js
 // @match       https://gall.dcinside.com/board/write/*
 // @match       https://gall.dcinside.com/mgallery/board/write/*
 // @match       https://gall.dcinside.com/mini/board/write/*

@@ -1,12 +1,13 @@
 // ==UserScript==
+// @name        DCInside Account Randomizer
 // @description 디시인사이드에 글 또는 댓글을 올릴 때 미리 지정해둔 계정 정보 중 아무거나 선택해 적용한 뒤 서버에 전송합니다
 // @version     1.0.0
 // @author      toriato
 // @copyright   2021, Sangha Lee
 // @license     MIT
 // @icon        https://nstatic.dcinside.com/dc/m/img/dcinside_icon.png
-// @require     https://github.com/toriato/userscripts/raw/master/library/fetch.js
-// @require     https://github.com/toriato/userscripts/raw/master/library/xhr.js
+// @require     https://openuserjs.org/src/libs/toriato/Promisified_GM_xmlhttpRequest.min.js
+// @require     https://openuserjs.org/src/libs/toriato/XHR_Hooks.min.js
 // @match       https://gall.dcinside.com/board/write/*
 // @match       https://gall.dcinside.com/mgallery/board/write/*
 // @match       https://gall.dcinside.com/mini/board/write/*

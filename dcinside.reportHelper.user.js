@@ -1,8 +1,10 @@
 // ==UserScript==
-// @name        dcinside.reporter.user.js
-// @namespace   https://github.com/toriato/userscripts/dcinside.reporter.user.js
+// @name        디시인사이드 신문고 도우미
 // @description 디시인사이드에서 신문고 글이 있는 마이너 또는 미니 갤러리에 신고 댓글을 자동으로 만들어 올려주는 버튼을 추가합니다
-// @author      Sangha Lee <totoriato@gmail.com>
+// @version     1.0.0
+// @author      toriato
+// @copyright   2021, Sangha Lee
+// @license     MIT
 // @icon        https://nstatic.dcinside.com/dc/m/img/dcinside_icon.png
 // @require     https://github.com/toriato/userscripts/raw/master/library/fetch.js
 // @match       https://gall.dcinside.com/mgallery/board/view/*
@@ -12,7 +14,9 @@
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_xmlhttpRequest
-// @downloadURL https://github.com/toriato/userscripts/raw/master/dcinside.reporter.user.js
+// @updateURL   https://openuserjs.org/meta/toriato/dcinside.reportHelper.user.js
+// @downloadURL https://openuserjs.org/install/toriato/dcinside.reportHelper.user.js
+// @homepageURL https://github.com/toriato/userscripts
 // @supportURL  https://github.com/toriato/userscripts/issues
 // ==/UserScript==
 

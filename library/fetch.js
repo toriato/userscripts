@@ -1,12 +1,14 @@
 // ==UserScript==
-// ==UserLibrary==
-// @name        fetch.js
-// @description 비동기(Promise) 웹 요청 라이브러리
-// ==/UserLibrary==
-// @namespace   https://github.com/toriato/userscripts/library/fetch.js
 // @exclude     *
 // @grant       GM.xmlhttpRequest
-// @downloadURL https://github.com/toriato/userscripts/raw/master/library/fetch.js
+// ==UserLibrary==
+// @name        Fetch
+// @description 비동기(Promise) 웹 요청 라이브러리
+// @version     1.0.0
+// @author      toriato
+// @copyright   2021, Sangha Lee
+// @license     MIT
+// @homepageURL https://github.com/toriato/userscripts
 // @supportURL  https://github.com/toriato/userscripts/issues
 // ==/UserLibrary==
 // ==/UserScript==

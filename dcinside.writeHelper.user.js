@@ -1,18 +1,22 @@
 // ==UserScript==
-// @name        dcinside.editor.autoImage.user.js
-// @namespace   https://github.com/toriato/userscripts/dcinside.editor.autoImage.user.js
-// @description 디시인사이드 글 작성 페이지를 열 때 사용자가 설정한 이미지(자짤)를 자동으로 업로드합니다
-// @author      Sangha Lee <totoriato@gmail.com>
+// @name        디시인사이드 글 작성 도우미
+// @description 디시인사이드에 글을 작성할 때 자동으로 자짤, 말머리, 말꼬리 등을 추가합니다
+// @version     1.0.0
+// @author      toriato
+// @copyright   2021, Sangha Lee
+// @license     MIT
 // @icon        https://nstatic.dcinside.com/dc/m/img/dcinside_icon.png
+// @require     https://unpkg.com/js-sha1@0.6.0/build/sha1.min.js
+// @require     https://github.com/toriato/userscripts/raw/master/library/fetch.js
+// @require     https://github.com/toriato/userscripts/raw/master/library/xhr.js
 // @match       https://gall.dcinside.com/board/write/*
 // @match       https://gall.dcinside.com/mgallery/board/write/*
 // @match       https://gall.dcinside.com/mini/board/write/*
-// @require     https://unpkg.com/js-sha1@0.6.0/build/sha1.min.js
-// @require     https://github.com/toriato/userscripts/raw/master/library/fetch.js
 // @run-at      document-end
 // @grant       GM_getValue
 // @grant       GM_xmlhttpRequest
-// @downloadURL https://github.com/toriato/userscripts/raw/master/dcinside.editor.autoImage.user.js
+// @updateURL   https://openuserjs.org/meta/toriato/dcinside.writeHelper.user.js
+// @downloadURL https://openuserjs.org/install/toriato/dcinside.writeHelper.user.js
 // @supportURL  https://github.com/toriato/userscripts/issues
 // ==/UserScript==
 
@@ -26,12 +30,20 @@
 /**
  * 갤러리 설정 객체
  * @typedef Option
- * @property {string} id 갤러리 아이디
- * @property {string} name 갤러리 이름
+ * @property {string[]} headers 글머리 배열
+ * @property {string[]} footers 글꼬리 배열
  * @property {Image[]} images 이미지 배열
  * @property {bool} useRandomFilename 무작위 파일 이름을 사용할지?
  * @property {bool} appendRandomBytes 파일 끝에 무작위 바이트를 추가할지?
  */
+
+
+// 갤러리 별 옵션 불러오기
+const params = (new URL(location.href)).searchParams
+const galleryId = params.get('id')
+
+/** @type {Option} */
+const options = GM_getValue(`option_${galleryId}`, GM_getValue('option', {}))
 
 /**
  * 이미지 구조를 Blob 으로 변환합니다
@@ -80,7 +92,7 @@ function imageToBlob(image) {
  * 자짤을 서버에 업로드한 뒤 편집기에 삽입합니다
  * @returns {Promise<void>}
  */
-async function attachPrefixImage() {
+async function attachImage() {
   const images = options.images
   if (images.length < 1) {
     return
@@ -103,13 +115,13 @@ async function attachPrefixImage() {
   // 폼 데이터 만들기
   const data = new FormData()
   data.append('r_key', document.getElementById('r_key').value)
-  data.append('gall_id', options.id)
+  data.append('gall_id', galleryId)
   data.append('files[]', blob,
     options.useRandomFilename ? `${sha1(new Date)}.${image.name.split('.').pop()}` : image.name)
 
   // 이미지 업로드
   const res = await fetch({
-    url: 'https://upimg.dcinside.com/upimg_file.php?id=' + options.id,
+    url: 'https://upimg.dcinside.com/upimg_file.php?id=' + galleryId,
     method: 'POST',
     responseType: 'json',
     data,
@@ -147,16 +159,31 @@ async function attachPrefixImage() {
   }
 }
 
-// 갤러리 별 옵션 불러오기
-const params = (new URL(location.href)).searchParams
+// 말머리와 말꼬리 추가를 위해 훅 추가하기
+XMLHttpRequest.registerHook(
+  (method, url) => method === 'POST' && url === '/board/forms/article_submit',
+  function (data) {
+    const params = new URLSearchParams(data)
+    const contents = [params.get('memo')]
 
-/** @type {Option} */
-const options = GM_getValue(`option_${params.get('id')}`, GM_getValue('option', {}))
+    if (options.headers && options.headers.length > 0) {
+      const header = options.headers[Math.floor(Math.random() * options.headers.length)]
+      contents.unshift(`<div id="dcappheader">${header}</div>`)
+    }
 
-if (!options.id) options.id = params.get('id')
-if (!options.name) options.name = document.querySelector('title').textContent
+    if (options.footers && options.footers.length > 0) {
+      const footer = options.footers[Math.floor(Math.random() * options.footers.length)]
+      contents.push(`<div id="dcappheader">${footer}</div>`)
+    }
 
-attachPrefixImage()
+    params.set('memo', contents.join(''))
+
+    return params.toString()
+  }
+)
+
+// 자짤 올리기
+attachImage()
   .catch(e => {
     alert('자짤 업로드 중 오류가 발생했습니다:\n' + e.message)
     console.error(e)

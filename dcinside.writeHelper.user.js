@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        디시인사이드 글 작성 도우미
+// @name        dcinside write helper
 // @description 디시인사이드에 글을 작성할 때 자동으로 자짤, 말머리, 말꼬리 등을 추가합니다
 // @version     1.0.0
 // @author      toriato

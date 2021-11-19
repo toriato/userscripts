@@ -1,5 +1,4 @@
 // ==UserScript==
-// @name        디시인사이드 신문고 도우미
 // @description 디시인사이드에서 신문고 글이 있는 마이너 또는 미니 갤러리에 신고 댓글을 자동으로 만들어 올려주는 버튼을 추가합니다
 // @version     1.0.0
 // @author      toriato

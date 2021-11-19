@@ -1,5 +1,4 @@
 // ==UserScript==
-// @name        디시인사이드 무작위 계정 선택 스크립트
 // @description 디시인사이드에 글 또는 댓글을 올릴 때 미리 지정해둔 계정 정보 중 아무거나 선택해 적용한 뒤 서버에 전송합니다
 // @version     1.0.0
 // @author      toriato

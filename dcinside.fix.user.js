@@ -1,5 +1,4 @@
 // ==UserScript==
-// @name        디시인사이드 오류 해결 도우미
 // @description 디시인사이드에서 자주 발생하는 오류를 해결합니다
 // @version     1.0.0
 // @author      toriato

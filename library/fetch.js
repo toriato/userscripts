@@ -2,7 +2,6 @@
 // @exclude     *
 // @grant       GM.xmlhttpRequest
 // ==UserLibrary==
-// @name        Fetch
 // @description 비동기(Promise) 웹 요청 라이브러리
 // @version     1.0.0
 // @author      toriato

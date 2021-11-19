@@ -2,7 +2,6 @@
 // @exclude     *
 // @grant       GM.xmlhttpRequest
 // ==UserLibrary==
-// @name        XHR 훅
 // @description XHR 요청을 가로채 사용자 콜백을 실행합니다
 // @version     1.0.0
 // @author      toriato

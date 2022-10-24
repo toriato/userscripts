@@ -6,7 +6,7 @@
 // @copyright   2021, Sangha Lee
 // @license     MIT
 // @icon        http://hcvsscn.gsretail.com/install/img/gs25.ico
-// @match       http://hcvsscn.gsretail.com/cssc/index.html
+// @match       https?://hcvsscn.gsretail.com/cssc/index.html
 // @grant       GM_xmlhttpRequest
 // @grant       GM_getValue
 // @updateURL   https://openuserjs.org/meta/toriato/GS25_Management_Plus.user.js
@@ -63,10 +63,21 @@ class GSMP {
   }
 
   static login(id) {
-    const f = application.mainframe.FrameSet0.ChildFrame0.form
+    const f = application.mainframe.FrameSet0.ChildFrame0.form.ds_login
     f.ds_login.clearData()
     f.ds_login.addRow()
-    f.ds_login.setColumn(0, 'USER_ID', id)
+
+    for (let [k, v] of Object.entries({
+      USER_ID: id,
+      URL: 'H',
+      IP_INFO: 'E',
+      CONN_SHPE_SP_CD: 'I',
+      CONN_CNF_SP_CD: 'H',
+      CONN_RESTR_FUNC_USE_YN: 'Y'
+    })) {
+      f.ds_login.setColumn(0, k, v)
+    }
+    
     f.gfn_CallService(
       'SVC_Login',
       'cssc/portal/portal/Login.do',
@@ -330,7 +341,7 @@ class Product {
 
 class ProductFactory {
   /**
-   * @param {string} code 
+   * @param {string} code
    */
   static async get(code) {
     const data = await new Promise((resolve, reject) => {
@@ -379,7 +390,7 @@ class SSV {
 
   /**
    * SSV 포맷으로 인코딩된 문자열을 디코딩합니다
-   * @param {string} raw 
+   * @param {string} raw
    * @returns {Dataset[]}
    */
   static decode(raw) {
@@ -465,7 +476,7 @@ class SSV {
 
   /**
    * 데이터셋을 SSV 포맷으로 인코딩합니다
-   * @param {Dataset[]} datasets 
+   * @param {Dataset[]} datasets
    * @returns {string}
    */
   static encode(datasets) {
